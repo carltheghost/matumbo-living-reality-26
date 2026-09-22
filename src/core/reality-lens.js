@@ -37,7 +37,8 @@ export function createSemanticLens({
   listObjects,
   getInteractions,
   onSurfaceFocus,
-  onRoomFocus
+  onRoomFocus,
+  onFocus
 }={}){
   const required=[
     ["getSelectedWorldId",getSelectedWorldId],
@@ -96,7 +97,9 @@ export function createSemanticLens({
       const room=getRoom(id);
       onRoomFocus?.(room);
     }
-    return snapshot();
+    const result=snapshot();
+    onFocus?.(result);
+    return result;
   }
 
   function focusWorld(worldId=getSelectedWorldId()){
