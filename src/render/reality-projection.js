@@ -187,6 +187,7 @@ export function createRealityProjection(canvas,engine,workspace=null){
       const group=new THREE.Group();
       group.position.copy(surfacePosition(index,surfaces.length));
       group.userData.surfaceId=surface.id;
+      group.userData.baseY=group.position.y;
 
       const active=surface.id===workspace.state.activeSurface;
       const baseColor=surfaceColor(surface);
@@ -466,7 +467,7 @@ export function createRealityProjection(canvas,engine,workspace=null){
     for(const [id,group] of surfaceNodes){
       const active=id===workspace?.state?.activeSurface;
       const pulse=1+Math.sin(t*2.2+id.length)*.045;
-      group.position.y+=Math.sin(t*1.2+id.length)*.0008;
+      group.position.y=Number(group.userData.baseY||0)+Math.sin(t*1.2+id.length)*.12;
       group.scale.setScalar((active?1.23:1)*pulse);
       group.rotation.y=t*(active?.28:.08);
     }
