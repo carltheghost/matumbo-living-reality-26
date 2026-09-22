@@ -1,6 +1,7 @@
 import {STANDARD,QUANTUM_BRANCHING,CPT_MIRROR,CUSTOM_LAWS,ANTIMATTER,ACTIVE_RESEARCH,HIGHER_DIMENSION,getRuleSet} from './physics-rules.js';
 import {createRealityState,cloneRealityState,recordHistory,recalculateSummaries} from './reality-state.js';
 import {invertMatterState,mirrorState,transformState,rewindState} from './transformations.js';
+import {stepReality} from './physics-simulation.js';
 const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));const uid=p=>p+'_'+Math.random().toString(36).slice(2,10);
 function compatible(a,b){return a.lawSetId===b.lawSetId&&a.dimension.spatial===b.dimension.spatial&&a.dimension.temporal===b.dimension.temporal}
 export class RealityLatticeEngine{
@@ -25,7 +26,7 @@ mirrorReality(sourceId){const source=this.get(sourceId),n=mirrorState(source);if
 invertMatter(sourceId){const source=this.get(sourceId),n=invertMatterState(source);if(this.realties.has(n.id))n.id=uid('R-ANTI');n.name=source.name+' · Antimatter';source.childIds.push(n.id);this.#insert(n);this.#link(source.id,n.id,'anti',{transform:'matter-inversion'});this.history.push({type:'anti',from:source.id,to:n.id});return n}
 transformReality(sourceId,targetRuleSetId){const source=this.get(sourceId),n=transformState(source,targetRuleSetId);if(this.realties.has(n.id))n.id=uid('R-TRANSFORM');source.childIds.push(n.id);this.#insert(n);this.#link(source.id,n.id,'transform',{targetRuleSetId});this.history.push({type:'transform',from:source.id,to:n.id,targetRuleSetId});return n}
 observeReality(sourceId,{branch=true,label='observation'}={}){const source=this.get(sourceId);recordHistory(source,{type:'observation',label,time:source.time});if(branch&&getRuleSet(source.lawSetId).observation.causesBranching)return this.forkReality(sourceId,{name:source.name+' · observed branch',kind:'observation-branch',patch:{metadata:{observation:label}}});return source}
-advanceTime(sourceId,dt=.1){const s=this.get(sourceId),delta=Number(dt);if(!Number.isFinite(delta)||delta<0)throw new RangeError('dt must be a finite non-negative number');const rule=getRuleSet(s.lawSetId);s.time+=delta*rule.timeModel.direction;s.entropy=Math.max(0,s.entropy+(rule.timeModel.direction>=0?delta*.5:-delta*.5));for(const e of s.entities)for(let i=0;i<Math.min(4,e.position.length);i++)e.position[i]+=Number(e.velocity[i]||0)*delta;recordHistory(s,{type:'advance-time',dt:delta,direction:rule.timeModel.direction,time:s.time});recalculateSummaries(s);return s}
+advanceTime(sourceId,dt=.1,options={}){const s=this.get(sourceId);return stepReality(s,dt,options)}
 advanceAll(dt=.05){for(const s of this.realties.values())this.advanceTime(s.id,dt);return this.snapshot()}
 rewindSimulation(id,dt=1){const source=this.get(id),n=rewindState(source,dt);this.#insert(n);this.#link(source.id,n.id,'rewind',{dt});this.history.push({type:'rewind',from:source.id,to:n.id,dt});return n}
 traceLineage(entityId){return this.list().filter(r=>r.entities.some(e=>e.lineageId===entityId||e.id===entityId)).map(r=>({realityId:r.id,name:r.name,entityIds:r.entities.filter(e=>e.lineageId===entityId||e.id===entityId).map(e=>e.id),ancestors:r.lineage.ancestors}))}
