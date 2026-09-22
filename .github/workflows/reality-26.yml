@@ -16,7 +16,7 @@ jobs:
       - run: npm test
 
   pages:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/matumbo-reality-integration')
     needs: test
     runs-on: ubuntu-latest
     permissions:
