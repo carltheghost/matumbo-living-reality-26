@@ -113,3 +113,21 @@ This branch is the experimental maTumbo integration line. Main remains the publi
 Guiding principle:
 
 Physics supplies the vocabulary and constraints. The software supplies the world.
+
+## Semantic Reality Lens
+
+Reality Lens Ω is implemented as a semantic navigation state machine rather than a camera-only zoom.
+
+The focus levels are:
+
+world
+surface
+room
+object
+interaction
+
+The Lens keeps a target id, parent id, semantic scale and breadcrumb path. Zoom-in follows the current spatial hierarchy; zoom-out returns along the path that was actually entered.
+
+The renderer uses this state to emphasize the focused layer. Selecting a 3D world focuses the world layer. Selecting a spatial surface focuses that surface. Selecting a floating workspace block focuses the object layer.
+
+This means the same underlying RealityState can be viewed at different semantic resolutions without creating duplicate realities or duplicate domain state.
