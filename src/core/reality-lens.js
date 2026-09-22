@@ -121,9 +121,9 @@ export function createSemanticLens({
     return listSurfaces().find(surface=>surface.id===mapping[roomId])||listSurfaces().find(surface=>surface.id==="rooms");
   }
 
-  function focusRoom(roomId){
+  function focusRoom(roomId,{surfaceId=null}={}){
     const room=getRoom(roomId);
-    const surface=surfaceForRoom(roomId);
+    const surface=surfaceId?getSurface(surfaceId):surfaceForRoom(roomId);
     return setFocus(LENS_LEVELS.ROOM,roomId,{parentId:surface?.id||null});
   }
 
@@ -180,7 +180,7 @@ export function createSemanticLens({
     }
     if(state.level===LENS_LEVELS.SURFACE){
       const room=roomForSurface(state.targetId);
-      return room?focusRoom(room.id):snapshot();
+      return room?focusRoom(room.id,{surfaceId:state.targetId}):snapshot();
     }
     if(state.level===LENS_LEVELS.ROOM){
       const object=firstObjectForRoom(state.targetId);
