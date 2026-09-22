@@ -145,6 +145,23 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
     const room={id:"room-"+(state.rooms.length+1),name:String(name||"New Room"),purpose:String(purpose||"programmable space"),realityId};
     state.rooms.push(room); log("room-created",{roomId:room.id}); return clone(room);
   }
+  function moveBlock(blockId,position){
+    const block=state.blocks.find(item=>item.id===blockId);
+    if(!block) throw new TypeError("unknown block id");
+    if(!Array.isArray(position)||position.length<3) throw new TypeError("position must contain x, y and z");
+    block.position=[Number(position[0])||0,Number(position[1])||0,Number(position[2])||0];
+    log("block-moved",{blockId,position:block.position});
+    return clone(block);
+  }
+  function moveRoom(roomId,realityId){
+    const room=state.rooms.find(item=>item.id===roomId);
+    if(!room) throw new TypeError("unknown room id");
+    if(!engine.realties.has(realityId)) throw new TypeError("unknown reality id");
+    room.realityId=realityId;
+    log("room-rebound",{roomId,realityId});
+    return clone(room);
+  }
+
   function addBlock(name,type="object",roomId=state.rooms[0].id){
     const block={id:"block-"+(state.blocks.length+1),name:String(name||"Floating Block"),type,roomId,position:[0,.8,0],simulated:true};
     state.blocks.push(block); log("block-created",{blockId:block.id}); return clone(block);
@@ -231,6 +248,8 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
     setChessRole,
     createRoom,
     addBlock,
+    moveBlock,
+    moveRoom,
     companionResponse,
     toggleCamera,
     createAwardRelic,
