@@ -15,7 +15,7 @@ function seeded(seed){
   return()=>{x=(x*1664525+1013904223)>>>0;return x/4294967296};
 }
 
-export function createRealityProjection(canvas,engine){
+export function createRealityProjection(canvas,engine,workspace=null){
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
   renderer.setClearColor(0x000000,0);
@@ -48,6 +48,10 @@ export function createRealityProjection(canvas,engine){
   lens.name='Reality Lens Omega';
   scene.add(lens);
 
+  const workspaceRoot=new THREE.Group();
+  workspaceRoot.name='maTumbo Workspace Objects';
+  scene.add(workspaceRoot);
+
   const starGeometry=new THREE.BufferGeometry();
   const rand=seeded('reality-lattice-omega-026');
   const starPositions=new Float32Array(1100*3);
@@ -65,12 +69,15 @@ export function createRealityProjection(canvas,engine){
   const ringGeometry=new THREE.RingGeometry(.5,.53,48);
   const lensGeometry=new THREE.SphereGeometry(1.05,32,24);
   const entityGeometry=new THREE.SphereGeometry(.075,10,8);
+  const blockGeometry=new THREE.BoxGeometry(.26,.18,.26);
   const nodes=new Map();
   const edges=new Map();
   const nodeMaterials=new Set();
   const edgeMaterials=new Set();
   const entityMaterials=new Set();
   let entityObjects=[];
+  const workspaceObjects=new Map();
+  const workspaceMaterials=new Set();
 
   const lensMaterial=new THREE.MeshBasicMaterial({
     color:0x79d9ff,transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false
@@ -110,6 +117,53 @@ export function createRealityProjection(canvas,engine){
     nodes.clear();
     edges.clear();
     clearEntityLens();
+  }
+
+  function clearWorkspaceProjection(){
+    for(const object of workspaceObjects.values())object.removeFromParent();
+    for(const material of workspaceMaterials)material.dispose?.();
+    workspaceObjects.clear();
+    workspaceMaterials.clear();
+  }
+
+  function workspaceColor(block){
+    if(block.type==='contract')return 0xf1c76b;
+    if(block.type==='nft')return 0xff91c0;
+    if(block.type==='input'||block.type==='lens')return 0x8edbff;
+    if(block.type==='fabric')return 0xb88dff;
+    if(block.type==='service-block')return 0x91a4ff;
+    return 0xaebed8;
+  }
+
+  function rebuildWorkspace(){
+    clearWorkspaceProjection();
+    if(!workspace?.state?.blocks)return;
+    const blocks=workspace.state.blocks.slice(0,80);
+    blocks.forEach((block,index)=>{
+      const material=new THREE.MeshStandardMaterial({
+        color:workspaceColor(block),
+        emissive:workspaceColor(block),
+        emissiveIntensity:block.type==='lens'?.8:.25,
+        metalness:.55,
+        roughness:.24,
+        transparent:true,
+        opacity:.9
+      });
+      workspaceMaterials.add(material);
+      const mesh=new THREE.Mesh(blockGeometry,material);
+      const p=Array.isArray(block.position)?block.position:[0,.7,0];
+      mesh.position.set(
+        Number(p[0]||0),
+        Number(p[1]||.7)+.05*(index%3),
+        Number(p[2]||0)
+      );
+      mesh.rotation.set(.22*index,.31*index,.17*index);
+      mesh.scale.setScalar(block.type==='lens'?1.35:1);
+      mesh.userData.blockId=block.id;
+      mesh.userData.blockType=block.type;
+      workspaceRoot.add(mesh);
+      workspaceObjects.set(block.id,mesh);
+    });
   }
 
   function rebuildLens(){
@@ -203,6 +257,7 @@ export function createRealityProjection(canvas,engine){
       edges.set(edge.id,line);
     }
     rebuildLens();
+    rebuildWorkspace();
   }
 
   function resize(){
@@ -256,6 +311,16 @@ export function createRealityProjection(canvas,engine){
       object.scale.setScalar(1+Math.sin(t*3+index)*.18);
     });
 
+    workspaceObjects.forEach((object,index)=>{
+      const base=object.userData.blockId?.length||index;
+      object.position.y+=Math.sin(t*1.4+base)*.0007;
+      object.rotation.y+=.0015*(index+1);
+      const active=workspace?.surface?.id;
+      const type=object.userData.blockType;
+      const boost=active==='contracts'&&type==='contract'||active==='lens'&&(type==='lens'||type==='input')||active==='nft'&&type==='nft'||active==='prime'&&type==='fabric';
+      object.scale.setScalar((boost?1.35:1)*(type==='lens'?1.1:1));
+    });
+
     controls.update();
     renderer.render(scene,camera);
   }
@@ -276,6 +341,8 @@ export function createRealityProjection(canvas,engine){
       nodeGeometry.dispose();
       ringGeometry.dispose();
       entityGeometry.dispose();
+      blockGeometry.dispose();
+      for(const material of workspaceMaterials)material.dispose?.();
       lensMaterial.dispose();
       lensRingMaterial.dispose();
       renderer.dispose();
