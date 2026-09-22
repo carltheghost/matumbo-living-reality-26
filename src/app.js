@@ -524,6 +524,10 @@ $('#luna-form').addEventListener('submit',event=>{
 });
 
 wireShell();
+projection.setSurfaceHandler(surfaceId=>{
+  toast(workspace.state.surfaces.find(surface=>surface.id===surfaceId)?.label||surfaceId);
+  renderAll();
+});
 renderAll();
 
 let previous=performance.now();
