@@ -270,15 +270,56 @@ export function createRealityProjection(canvas,engine,workspace=null){
 
   const ray=new THREE.Raycaster();
   const pointer=new THREE.Vector2();
+  const dragPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+  const dragPoint=new THREE.Vector3();
+  let dragging=null;
+  let wasDragged=false;
 
-  function pick(event){
+  function updatePointer(event){
     const rect=canvas.getBoundingClientRect();
     pointer.x=((event.clientX-rect.left)/rect.width)*2-1;
     pointer.y=-((event.clientY-rect.top)/rect.height)*2+1;
     ray.setFromCamera(pointer,camera);
-    const hit=ray.intersectObjects(
-      [...nodes.values()].flatMap(group=>group.children),true
-    )[0];
+  }
+
+  function beginDrag(event){
+    updatePointer(event);
+    const hit=ray.intersectObjects([...workspaceObjects.values()],true)[0];
+    if(!hit)return false;
+    const object=hit.object;
+    const blockId=object.userData?.blockId;
+    if(!blockId||!workspace?.moveBlock)return false;
+    dragging={blockId,object,pointerId:event.pointerId};
+    wasDragged=false;
+    dragPlane.set(new THREE.Vector3(0,1,0),-object.position.y);
+    controls.enabled=false;
+    canvas.setPointerCapture?.(event.pointerId);
+    return true;
+  }
+
+  function moveDrag(event){
+    if(!dragging)return false;
+    updatePointer(event);
+    if(!ray.ray.intersectPlane(dragPlane,dragPoint))return false;
+    const block=workspace.moveBlock(dragging.blockId,[dragPoint.x,dragging.object.position.y,dragPoint.z]);
+    dragging.object.position.set(block.position[0],block.position[1],block.position[2]);
+    dragging.object.userData.baseY=block.position[1];
+    wasDragged=true;
+    return true;
+  }
+
+  function endDrag(){
+    if(!dragging)return false;
+    canvas.releasePointerCapture?.(dragging.pointerId);
+    dragging=null;
+    controls.enabled=true;
+    return true;
+  }
+
+  function pick(event){
+    if(wasDragged){wasDragged=false;return false;}
+    updatePointer(event);
+    const hit=ray.intersectObjects([...nodes.values()].flatMap(group=>group.children),true)[0];
     if(!hit)return false;
     const id=hit.object.userData?.realityId||hit.object.parent?.userData?.realityId;
     if(!id)return false;
@@ -287,6 +328,10 @@ export function createRealityProjection(canvas,engine,workspace=null){
     return true;
   }
 
+  canvas.addEventListener('pointerdown',beginDrag);
+  canvas.addEventListener('pointermove',moveDrag);
+  canvas.addEventListener('pointerup',endDrag);
+  canvas.addEventListener('pointercancel',endDrag);
   canvas.addEventListener('click',pick);
   window.addEventListener('resize',resize);
 
