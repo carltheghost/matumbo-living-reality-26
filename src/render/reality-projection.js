@@ -157,6 +157,7 @@ export function createRealityProjection(canvas,engine,workspace=null){
         Number(p[1]||.7)+.05*(index%3),
         Number(p[2]||0)
       );
+      mesh.userData.baseY=mesh.position.y;
       mesh.rotation.set(.22*index,.31*index,.17*index);
       mesh.scale.setScalar(block.type==='lens'?1.35:1);
       mesh.userData.blockId=block.id;
@@ -313,7 +314,7 @@ export function createRealityProjection(canvas,engine,workspace=null){
 
     workspaceObjects.forEach((object,index)=>{
       const base=object.userData.blockId?.length||index;
-      object.position.y+=Math.sin(t*1.4+base)*.0007;
+      object.position.y=Number(object.userData.baseY||0)+Math.sin(t*1.4+base)*.06;
       object.rotation.y+=.0015*(index+1);
       const active=workspace?.surface?.id;
       const type=object.userData.blockType;
