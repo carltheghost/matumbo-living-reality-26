@@ -510,7 +510,7 @@ export function createRealityProjection(canvas,engine,workspace=null){
         active==='nft'&&type==='nft' ||
         active==='prime'&&type==='fabric';
       const semanticBoost=objectFocused||interactionFocused?2.05:roomFocused?1.48:1;
-      if(object.material?.opacity!==undefined) object.material.opacity=(objectFocused||interactionFocused)?.98:roomFocused?.58:.9;
+      if(object.material?.opacity!==undefined) object.material.opacity=(objectFocused||interactionFocused) ? .98 : roomFocused ? .58 : .9;
       object.scale.setScalar((boost?1.35:1)*semanticBoost*(type==='lens'?1.1:1));
     });
 
