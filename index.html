@@ -3,111 +3,161 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#03050b">
 <title>maTumbo — Living Reality Ω .26</title>
 <link rel="stylesheet" href="./styles.css">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.179.1/examples/jsm/"}}</script>
 </head>
 <body>
-<main id="app">
-  <aside class="panel left-panel">
-    <div class="eyebrow">maTumbo / LIVING REALITY Ω / .26</div>
-    <h1>Living Reality <span>Ω</span></h1>
-    <p class="lede">Reality is the substrate. The lattice, contracts, rooms, identities and tools are things that live inside it.</p>
+<main id="app" class="reality-shell">
+  <section class="stage" aria-label="maTumbo spatial reality">
+    <canvas id="scene"></canvas>
 
-    <section>
-      <div class="section-title">WORKSPACE</div>
-      <div id="surface-list" class="surface-list"></div>
-    </section>
+    <header class="brand-float glass-card">
+      <div class="eyebrow">maTumbo / LIVING REALITY Ω / .26</div>
+      <div class="brand-row">
+        <h1>maTumbo <span>Ω</span></h1>
+        <div class="status-line">
+          <div class="status-pill" id="mode-pill">OBSERVED</div>
+          <div class="branch-pill">EXPERIMENTAL</div>
+        </div>
+      </div>
+      <div id="breadcrumb" class="breadcrumb">Living Reality Ω · Reality Lattice · Observed Reality</div>
+    </header>
 
-    <section>
-      <div class="section-title">REALITY MAP</div>
+    <div class="world-orbit glass-card">
+      <div class="orbit-head">
+        <div>
+          <div class="section-title">REALITY MAP</div>
+          <div class="orbit-copy">Worlds orbit the selected reality.</div>
+        </div>
+        <button class="icon-button" id="toggle-map" aria-label="Toggle reality map">MAP</button>
+      </div>
       <div id="reality-list" class="reality-list"></div>
-    </section>
+    </div>
 
-    <section>
-      <div class="section-title">SELECTED WORLD</div>
-      <div id="selected-title" class="selected-title">Observed Reality</div>
-      <div id="selected-meta" class="meta"></div>
-    </section>
+    <div class="surface-dock glass-card">
+      <div class="dock-head">
+        <div>
+          <div class="section-title">SPATIAL DOCK</div>
+          <div class="dock-copy">Everything here is a surface inside the same reality.</div>
+        </div>
+        <button class="icon-button" id="toggle-dock" aria-label="Toggle spatial dock">DOCK</button>
+      </div>
+      <div id="surface-list" class="surface-list"></div>
+    </div>
 
-    <section>
-      <div class="section-title">WORLD OPERATIONS</div>
-      <div class="button-grid">
+    <article id="focus-card" class="focus-card glass-card">
+      <div class="focus-glow"></div>
+      <div class="focus-kicker">SELECTED REALITY</div>
+      <div id="selected-title" class="focus-title">Observed Reality</div>
+      <div id="selected-meta" class="focus-meta"></div>
+      <div class="focus-divider"></div>
+      <div class="focus-actions">
         <button data-action="fork">Fork</button>
-        <button data-action="mirror">Mirror / CPT</button>
-        <button data-action="anti">Invert Matter</button>
+        <button data-action="mirror">CPT Mirror</button>
+        <button data-action="anti">Antimatter</button>
         <button data-action="custom">Custom Laws</button>
         <button data-action="rewind">Rewind</button>
         <button data-action="observe">Observe</button>
       </div>
-    </section>
-  </aside>
+    </article>
 
-  <section class="stage">
-    <canvas id="scene"></canvas>
-
-    <div class="hud top-left">
-      <div class="status-line">
-        <div class="status-pill" id="mode-pill">OBSERVED</div>
-        <div class="branch-pill">EXPERIMENTAL BRANCH</div>
-      </div>
-      <div id="breadcrumb">Living Reality Ω · Reality Lattice</div>
-    </div>
-
-    <div class="hud top-right">
+    <div class="metrics-float glass-card" aria-label="Reality metrics">
       <div class="metric"><strong id="world-count">0</strong><span>worlds</span></div>
       <div class="metric"><strong id="edge-count">0</strong><span>relations</span></div>
       <div class="metric"><strong id="entity-count">0</strong><span>entities</span></div>
       <div class="metric"><strong id="contract-count">0</strong><span>contracts</span></div>
     </div>
 
-    <div id="surface-overlay" class="surface-overlay">
+    <div id="surface-overlay" class="surface-overlay glass-card">
       <div class="overlay-kicker" id="surface-kicker">REALITY SUBSTRATE</div>
       <div class="overlay-title" id="surface-title">Reality Lattice</div>
       <div class="overlay-copy" id="surface-copy">Worlds, branches, mirrors, antimatter, research and custom laws.</div>
       <div class="overlay-actions" id="surface-actions"></div>
     </div>
 
-    <div class="hud bottom">
-      <div id="hint">Drag to orbit · scroll to scale · click a world · use Workspace to move through maTumbo</div>
+    <div class="lens-badge glass-card">
+      <span class="lens-orb"></span>
+      <div>
+        <strong>Reality Lens Ω</strong>
+        <span>semantic zoom · floorless space</span>
+      </div>
     </div>
-  </section>
 
-  <aside class="panel right-panel">
-    <section>
-      <div class="section-title">SURFACE STATE</div>
-      <div id="surface-state" class="surface-state"></div>
-    </section>
-
-    <section>
-      <div class="section-title">WORLD STATE</div>
-      <pre id="state-output">{}</pre>
-    </section>
-
-    <section>
-      <div class="section-title">LIVING CONSOLE</div>
+    <div id="console-drawer" class="floating-drawer glass-card" data-open="false">
+      <div class="drawer-head">
+        <div>
+          <div class="section-title">LIVING CONSOLE</div>
+          <div class="drawer-copy">Typed intent into the reality engine.</div>
+        </div>
+        <button class="icon-button" id="toggle-console">CLOSE</button>
+      </div>
       <form id="command-form">
-        <input id="command" autocomplete="off" spellcheck="false" placeholder="CONTRACT OCT-SOCCER-001">
+        <input id="command" autocomplete="off" spellcheck="false" placeholder="FORK R-OBSERVED Alternate Branch">
         <button>RUN</button>
       </form>
-      <div class="command-help">FORK · MIRROR · ANTI · REWIND · OBSERVE · TRACE · COMPARE · MERGE · TRANSFORM · ADVANCE · SURFACE</div>
+      <div class="command-help">FORK · MIRROR · ANTI · REWIND · OBSERVE · TRACE · COMPARE · MERGE · TRANSFORM · ADVANCE · SURFACE · CONTRACT · EQUIP · ROLE · CAMERA · PAY · AGENT · LUNA</div>
       <pre id="console-output">maTumbo booting…</pre>
-    </section>
+    </div>
 
-    <section>
-      <div class="section-title">LUNA</div>
-      <form id="luna-form" class="inline-form">
-        <input id="luna-input" autocomplete="off" placeholder="Ask the local guide…">
-        <button>ASK</button>
-      </form>
-      <div id="luna-output" class="luna-output">Welcome home.</div>
-    </section>
+    <div id="inspector-drawer" class="floating-drawer inspector-drawer glass-card" data-open="false">
+      <div class="drawer-head">
+        <div>
+          <div class="section-title">REALITY LENS</div>
+          <div class="drawer-copy">Semantic state follows the selected world.</div>
+        </div>
+        <button class="icon-button" id="toggle-inspector">CLOSE</button>
+      </div>
+      <section>
+        <div class="mini-title">SURFACE STATE</div>
+        <div id="surface-state" class="surface-state"></div>
+      </section>
+      <section>
+        <div class="mini-title">WORLD STATE</div>
+        <pre id="state-output">{}</pre>
+      </section>
+      <section>
+        <div class="mini-title">MODEL / SYSTEM BOUNDARIES</div>
+        <div id="model-status"></div>
+      </section>
+    </div>
 
-    <section>
-      <div class="section-title">MODEL / SYSTEM BOUNDARIES</div>
-      <div id="model-status"></div>
-    </section>
-  </aside>
+    <div id="luna-dock" class="luna-dock glass-card">
+      <div class="luna-mark">L</div>
+      <div class="luna-body">
+        <div class="section-title">LUNA</div>
+        <div id="luna-output" class="luna-output">Welcome home.</div>
+        <form id="luna-form" class="inline-form">
+          <input id="luna-input" autocomplete="off" placeholder="Ask the local guide…">
+          <button>ASK</button>
+        </form>
+      </div>
+    </div>
+
+    <nav class="tool-rail glass-card" aria-label="Reality tools">
+      <button class="rail-button active" data-surface="lattice"><span>◈</span><em>Lattice</em></button>
+      <button class="rail-button" data-surface="contracts"><span>◇</span><em>Contracts</em></button>
+      <button class="rail-button" data-surface="arena"><span>♛</span><em>Arena</em></button>
+      <button class="rail-button" data-surface="rooms"><span>○</span><em>Rooms</em></button>
+      <button class="rail-button" data-surface="profile"><span>◉</span><em>Profile</em></button>
+      <button class="rail-button" data-surface="wardrobe"><span>✦</span><em>Wardrobe</em></button>
+      <button class="rail-button" data-surface="nft"><span>⬡</span><em>NFT</em></button>
+      <button class="rail-button" data-surface="ledger"><span>≋</span><em>Ledger</em></button>
+      <button class="rail-button" data-surface="lens"><span>◎</span><em>Lens</em></button>
+      <button class="rail-button" data-surface="prime"><span>Ω</span><em>Prime</em></button>
+      <button class="rail-button" data-surface="commerce"><span>₿</span><em>t402</em></button>
+      <button class="rail-button" data-surface="agents"><span>✺</span><em>Agents</em></button>
+    </nav>
+
+    <div class="bottom-actions">
+      <button id="open-console" class="floating-button">⌘ Console</button>
+      <button id="open-inspector" class="floating-button">Lens State</button>
+      <div class="hint">Drag space objects · click worlds · scroll to zoom</div>
+    </div>
+
+    <div class="toast" id="toast" aria-live="polite"></div>
+  </section>
 </main>
 <script type="module" src="./src/app.js"></script>
 </body>
