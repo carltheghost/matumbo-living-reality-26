@@ -16,7 +16,7 @@ test('starter contracts are attached to realities and remain simulated',()=>{
   const engine=createRealityLattice();
   const workspace=createMatumboReality(engine);
   const contracts=workspace.contracts.list();
-  assert.equal(contracts.length,3);
+  assert.equal(contracts.length,5);
   assert.equal(contracts[0].simulation,true);
   assert.equal(contracts[0].realMoney,false);
   assert.ok(engine.realties.has(contracts[0].realityId));
