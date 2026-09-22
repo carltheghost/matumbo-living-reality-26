@@ -552,6 +552,10 @@ projection.setSurfaceHandler(surfaceId=>{
   toast(workspace.state.surfaces.find(surface=>surface.id===surfaceId)?.label||surfaceId);
   renderAll();
 });
+projection.setSemanticFocusHandler(focus=>{
+  toast('Lens → '+focus.description.label);
+  renderAll();
+});
 renderAll();
 
 let previous=performance.now();
