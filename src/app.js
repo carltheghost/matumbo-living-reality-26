@@ -4,7 +4,7 @@ import {createRealityProjection} from './render/reality-projection.js';
 
 const engine=createRealityLattice();
 const workspace=createMatumboReality(engine);
-const projection=createRealityProjection(document.querySelector('#scene'),engine);
+const projection=createRealityProjection(document.querySelector('#scene'),engine,workspace);
 const $=s=>document.querySelector(s);
 const pretty=value=>JSON.stringify(value,null,2);
 const categoryColor={A:'#69cfff',B:'#f0c56b',C:'#91a4ff',D:'#ff91c0',E:'#b98dff'};
@@ -192,7 +192,7 @@ function renderSystem(){
   ].map(x=>'<div class="model-row"><strong>'+x[0]+' · '+x[1]+'</strong><span>'+x[2]+'</span></div>').join('');
 }
 
-function renderAll(){renderSurfaces();renderWorlds();renderWorldState();renderSurfaceState();renderOverlay();renderSystem()}
+function renderAll(){projection.rebuild();renderSurfaces();renderWorlds();renderWorldState();renderSurfaceState();renderOverlay();renderSystem()}
 document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>apply(button.dataset.action)));
 
 $('#command-form').addEventListener('submit',event=>{
