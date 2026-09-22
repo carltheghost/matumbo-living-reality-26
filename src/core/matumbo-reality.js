@@ -1,4 +1,6 @@
 import {createOutcomeContracts,SIMULATION_UNIT} from './outcome-contracts.js';
+import {createAirTyping} from '../input/air-typing.js';
+import {createHandLens} from '../input/hand-lens.js';
 
 const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
 
@@ -48,6 +50,7 @@ function event(id,title,realityId,kind){
 
 export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
   const contracts=createOutcomeContracts({seed});
+  const input={airTyping:createAirTyping(),handLens:createHandLens()};
   const state={
     schemaVersion:MATUMBO_REALITY_SCHEMA,
     activeSurface:"lattice",
@@ -63,6 +66,7 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
     profile:{id:"profile-matumbo",displayName:"maTumbo Profile",avatar:"person",outfitId:"obsidian",chessRole:"queen-king"},
     wardrobe:clone(WARDROBE),
     lens:{mode:"semantic-zoom",cameraEnabled:false,deviceLocalOnly:true,hands:2,videoMode:"VIDEO",airKeyboard:true,fingerNavigation:true},
+    input:{airTypingSchema:"matumbo-air-typing-0.26",handLensSchema:"matumbo-hand-lens-0.26"},
     contractUnit:SIMULATION_UNIT,
     commerce:{protocol:"t402",rail:"PAYCORE",status:"rehearsal",paymentRequired:true,realMoney:false,realSettlement:false,custody:false},
     agents:{controller:"Controller",workers:["MemoryFileAgent","DocumentationFileAgent"],reviewer:"Reviewer",network:false,autonomy:"local-plan-only"},
@@ -232,6 +236,7 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
     createAwardRelic,
     rehearsePayment,
     agentPlan,
+    input,
     snapshot,
     get surface(){return state.surfaces.find(x=>x.id===state.activeSurface)}
   };
