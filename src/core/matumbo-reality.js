@@ -2,6 +2,7 @@ import {createOutcomeContracts,SIMULATION_UNIT} from './outcome-contracts.js';
 import {addCausalEvent} from './causality.js';
 import {createAirTyping} from '../input/air-typing.js';
 import {createHandLens} from '../input/hand-lens.js';
+import {createSemanticLens} from './reality-lens.js';
 
 const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
 
@@ -66,7 +67,7 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
     ],
     profile:{id:"profile-matumbo",displayName:"maTumbo Profile",avatar:"person",outfitId:"obsidian",chessRole:"queen-king"},
     wardrobe:clone(WARDROBE),
-    lens:{mode:"semantic-zoom",cameraEnabled:false,deviceLocalOnly:true,hands:2,videoMode:"VIDEO",airKeyboard:true,fingerNavigation:true},
+    lens:{mode:"semantic-zoom",cameraEnabled:false,deviceLocalOnly:true,hands:2,videoMode:"VIDEO",airKeyboard:true,fingerNavigation:true,focus:null},
     input:{airTypingSchema:"matumbo-air-typing-0.26",handLensSchema:"matumbo-hand-lens-0.26"},
     contractUnit:SIMULATION_UNIT,
     commerce:{protocol:"t402",rail:"PAYCORE",status:"rehearsal",paymentRequired:true,realMoney:false,realSettlement:false,custody:false},
@@ -120,6 +121,28 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
     contracts.join(feature.id,{participant:"simulated-reviewer",outcome:"HOLD",amount:25,idempotencyKey:"lens-hold"});
     return contracts.list();
   }
+  const semanticLens=createSemanticLens({
+    getSelectedWorldId:()=>engine.selectedId,
+    getWorld:id=>engine.get(id),
+    getSurface:id=>state.surfaces.find(surface=>surface.id===id),
+    listSurfaces:()=>state.surfaces,
+    getRoom:id=>state.rooms.find(room=>room.id===id),
+    listRooms:()=>state.rooms,
+    getObject:id=>state.blocks.find(block=>block.id===id),
+    listObjects:()=>state.blocks,
+    getInteractions:objectId=>[
+      {id:"inspect:"+objectId,label:"Inspect object"},
+      {id:"use:"+objectId,label:"Interact"},
+      {id:"move:"+objectId,label:"Move in space"}
+    ],
+    onSurfaceFocus:id=>{state.activeSurface=id;},
+    onRoomFocus:()=>{state.activeSurface="rooms";},
+    onFocus:focus=>{
+      state.lens.focus=clone(focus);
+      log("lens-focus",{level:focus.level,targetId:focus.targetId,scale:focus.scale});
+    }
+  });
+
   createStarterContracts();
 
   function rehearse(contractId,result){
@@ -263,6 +286,7 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
     rehearsePayment,
     agentPlan,
     input,
+    semanticLens,
     snapshot,
     get surface(){return state.surfaces.find(x=>x.id===state.activeSurface)}
   };
