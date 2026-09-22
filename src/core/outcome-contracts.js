@@ -164,12 +164,32 @@ export function createOutcomeContracts({seed="matumbo-contracts",now=()=>new Dat
     if(!award) throw new TypeError("unknown award");
     if(award.claimed) return clone(award);
     const nextAwards=c.awards.map(a=>a.id===awardId ? {...a,claimed:true,claimedAt:timestamp()} : a);
-    const next={...c,status:"claimed",awards:nextAwards,lifecycle:[...c.lifecycle,{status:"claimed",at:timestamp(),reason:"local holder claim"}]};
+    const allClaimed=nextAwards.length>0&&nextAwards.every(a=>a.claimed);
+    const next={
+      ...c,
+      status:allClaimed ? "claimed" : "settled",
+      awards:nextAwards,
+      lifecycle:allClaimed ? [...c.lifecycle,{status:"claimed",at:timestamp(),reason:"all award rows claimed"}] : c.lifecycle
+    };
     contracts.set(c.id,next);
     awards.set(awardId,{contractId:c.id,amount:award.amount,unit:SIMULATION_UNIT});
     return clone(nextAwards.find(a=>a.id===awardId));
   }
 
+  function transfer(contractId,awardId,holder){
+    const c=settle(contractId);
+    const award=c.awards.find(a=>a.id===awardId);
+    if(!award) throw new TypeError("unknown award");
+    if(award.claimed) throw new TypeError("claimed awards cannot be transferred");
+    const nextAwards=c.awards.map(a=>a.id===awardId ? {...a,holder:safeText(holder,"unassigned"),transferredAt:timestamp()} : a);
+    const next={...c,awards:nextAwards};
+    contracts.set(c.id,next);
+    return clone(nextAwards.find(a=>a.id===awardId));
+  }
+
+  function transferAward(contractId,awardId,holder){
+    return transfer(contractId,awardId,holder);
+  }
   function attach(contractId,realityId){
     const c=get(contractId);
     const next={...c,realityId:text(realityId,"R-OBSERVED")};
@@ -194,6 +214,7 @@ export function createOutcomeContracts({seed="matumbo-contracts",now=()=>new Dat
     grade,
     settle,
     claim,
+    transferAward,
     attach,
     quote,
     snapshot:()=>({schemaVersion:OUTCOME_CONTRACT_SCHEMA,contracts:[...contracts.values()].map(clone)})
