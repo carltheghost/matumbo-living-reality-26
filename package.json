@@ -12,7 +12,8 @@
     "./physics": "./src/core/physics-rules.js",
     "./transforms": "./src/core/transformations.js",
     "./contracts": "./src/core/outcome-contracts.js",
-    "./reality": "./src/core/matumbo-reality.js"
+    "./reality": "./src/core/matumbo-reality.js",
+    "./lens": "./src/core/reality-lens.js"
   },
   "engines": {"node": ">=20"}
 }
