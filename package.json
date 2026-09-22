@@ -1,0 +1,9 @@
+{
+  "name": "@matumbo/reality-lattice-omega",
+  "version": "0.26.0",
+  "private": true,
+  "type": "module",
+  "description": "Experimental programmable reality/world-model engine for maTumbo Living Reality Ω.",
+  "scripts": {"test": "node --test tests/*.test.mjs"},
+  "engines": {"node": ">=20"}
+}
