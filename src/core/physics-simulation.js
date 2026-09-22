@@ -59,14 +59,20 @@ export function stepReality(state,dt=0.05,{gravity=true}={}){
   state.time+=delta*direction;
   const entropyRate=finite(rule.simulation?.entropyRate,0.5);
   state.entropy=Math.max(0,state.entropy+delta*entropyRate*direction);
-  addCausalEvent(state,{
-    type:'simulation-step',
-    causes:state.entities.map(e=>e.id),
-    effects:state.entities.map(e=>e.id),
-    actorIds:state.entities.map(e=>e.id),
-    time:state.time,
-    metadata:{dt:delta,gravity,lawSetId:state.lawSetId}
-  });
+  const eventInterval=Math.max(0.1,finite(rule.simulation?.causalEventInterval,0.5));
+  const lastEvent=finite(state.metadata?._lastCausalEventTime,Number.NaN);
+  const shouldRecord=!Number.isFinite(lastEvent)||Math.abs(state.time-lastEvent)>=eventInterval;
+  if(shouldRecord){
+    state.metadata._lastCausalEventTime=state.time;
+    addCausalEvent(state,{
+      type:'simulation-step',
+      causes:state.entities.map(e=>e.id),
+      effects:state.entities.map(e=>e.id),
+      actorIds:state.entities.map(e=>e.id),
+      time:state.time,
+      metadata:{dt:delta,gravity,lawSetId:state.lawSetId}
+    });
+  }
   recalculateSummaries(state);
   return state;
 }
