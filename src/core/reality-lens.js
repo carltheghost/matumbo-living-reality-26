@@ -187,7 +187,7 @@ export function createSemanticLens({
     }
     if(state.level===LENS_LEVELS.OBJECT){
       const roomId=getObject(state.targetId)?.roomId;
-      return roomId?focusRoom(roomId):zoomOut();
+      return roomId?focusRoom(roomId):focusWorld();
     }
     if(state.level===LENS_LEVELS.INTERACTION){
       return state.parentId?focusObject(state.parentId):focusWorld();
