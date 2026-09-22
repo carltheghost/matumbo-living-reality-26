@@ -112,6 +112,12 @@ function renderSurfaceState(){
   } else if(surface.id==='agents'){
     out.innerHTML='<div class="surface-card"><strong>Agent Fabric</strong><span>'+workspace.state.agents.controller+' coordinates a bounded local plan.</span></div><div class="surface-card"><strong>Workers</strong><span>'+workspace.state.agents.workers.join(' · ')+'</span></div><div class="surface-card"><strong>Reviewer</strong><span>'+workspace.state.agents.reviewer+' · execution '+workspace.state.agents.autonomy+'</span></div><button id="agent-plan">Generate local plan</button>';
     $('#agent-plan').onclick=()=>{$('#console-output').textContent=pretty(workspace.agentPlan('coordinate the selected maTumbo surface'));renderAll()};
+  } else if(surface.id==='commerce'){
+    out.innerHTML='<div class="surface-card"><strong>t402 / PAYCORE</strong><span>payment-required rehearsal rail · '+workspace.state.contractUnit+' · no real value</span></div><div class="surface-row"><strong>Network</strong><span>LOCAL ONLY</span></div><div class="surface-row"><strong>Settlement</strong><span>SIMULATED / OFF</span></div><button id="pay-test">Rehearse payment for selected reality</button>';
+    $('#pay-test').onclick=()=>{$('#console-output').textContent=pretty(workspace.rehearsePayment({resource:'reality://'+engine.selectedId,amount:12}));renderAll()};
+  } else if(surface.id==='agents'){
+    out.innerHTML='<div class="surface-card"><strong>Agent Fabric</strong><span>'+workspace.state.agents.controller+' coordinates a bounded local plan.</span></div><div class="surface-card"><strong>Workers</strong><span>'+workspace.state.agents.workers.join(' · ')+'</span></div><div class="surface-card"><strong>Reviewer</strong><span>'+workspace.state.agents.reviewer+' · execution '+workspace.state.agents.autonomy+'</span></div><button id="agent-plan">Generate local plan</button>';
+    $('#agent-plan').onclick=()=>{$('#console-output').textContent=pretty(workspace.agentPlan('coordinate the selected maTumbo surface'));renderAll()};
   } else {
     out.innerHTML='<div class="surface-card"><strong>Reality substrate</strong><span>'+surface.description+'</span></div><div class="surface-row"><strong>Selected</strong><span>'+engine.selectedId+'</span></div><div class="surface-row"><strong>History</strong><span>'+engine.history.length+' engine actions</span></div>';
   }
