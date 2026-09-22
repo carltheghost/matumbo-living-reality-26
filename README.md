@@ -1,22 +1,79 @@
 # maTumbo Living Reality .26 — Reality Lattice Ω
 
-Experimental universe/world-model branch.
+Reality .26 is the clean experimental successor to .25.
 
-This repository is intentionally separate from the previous maTumbo Living Reality runtime. It does not attempt to reproduce the old Person Studio as its primary surface.
+## Core change from .25
 
-Reality Lattice Ω treats physics as a vocabulary and constraint system for an interactive software universe. The engine supports observed, alternate, quantum-inspired, mirror/CPT-inspired, antimatter, hidden-sector, custom-law, and higher-dimensional simulation layers. Physical status is metadata; software coherency and implementability are the execution requirements.
+.25 made the reality graph the primary object: a fixed 18-direction field around a nucleus.
 
-## Runtime
+.26 reverses that relationship:
 
-- Browser ES modules
-- Three.js 0.179.1 from a pinned CDN import map
-- No backend required
-- Local simulation state
-- GitHub Pages compatible
+**Reality is a programmable world. The graph describes relationships between worlds.**
 
-## First surface
+The runtime is:
 
-Open `index.html` to enter the Reality Lattice: a navigable 3-D network of reality nodes with fork, mirror, anti, custom-law, and higher-dimensional layers.
+    PhysicsRuleSet
+         ↓
+    RealityState
+         ↓
+    RealityLatticeEngine
+         ↓
+    RealityProjection
+         ↓
+    Three.js
+
+## Worlds included at boot
+
+- Observed Reality
+- Quantum Possibility
+- CPT / Mirror
+- Antimatter Reality
+- Alternate History
+- Research Frontier
+- Higher-Dimensional World
+- Custom Law Laboratory
+
+Category/status metadata distinguishes grounded physics inspiration from theoretical, active-research, speculative, and purely invented software models. The engine does not block a model because it is speculative.
+
+## Core operations
+
+    forkReality()
+    mergeReality()
+    mirrorReality()
+    invertMatter()
+    transformReality()
+    advanceTime()
+    rewindSimulation()
+    observeReality()
+    traceLineage()
+    compareReality()
+
+Transformations create new world states and retain parent/lineage metadata. Reality history therefore remains queryable instead of silently overwriting the source world.
+
+## Browser
+
+Open index.html from GitHub Pages or another static server.
+
+Three.js is pinned to 0.179.1 in the import map. The browser imports the bare specifier three; it does not append cache-busting query strings to the module specifier.
+
+## Commands
+
+    FORK R-OBSERVED
+    MIRROR R-OBSERVED
+    ANTI R-OBSERVED
+    REWIND R-OBSERVED 5
+    OBSERVE R-QUANTUM
+    TRACE observer-1
+    COMPARE R-OBSERVED R-MIRROR
+    MERGE R-A R-B
+    TRANSFORM R-OBSERVED custom-laws
+    ADVANCE R-OBSERVED 1
+
+## Tests
+
+    npm test
+
+The Node test suite exercises world creation, provenance categories, fork lineage, mirror/anti transforms, custom/research rules, rewind, merge, time direction, and higher-dimensional representation.
 
 ## Design rule
 
