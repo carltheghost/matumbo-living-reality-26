@@ -139,6 +139,15 @@ test('Reality Lens exposes a semantic five-level focus path',()=>{
   assert.equal(focus.level,LENS_LEVELS.ROOM);
   assert.equal(workspace.state.activeSurface,'rooms');
 
+  focus=lens.zoomOut();
+  assert.equal(focus.level,LENS_LEVELS.SURFACE);
+  assert.equal(focus.targetId,'lattice');
+  lens.zoomIn();
+
+  focus=lens.zoomIn();
+  assert.equal(focus.level,LENS_LEVELS.ROOM);
+  assert.equal(workspace.state.activeSurface,'rooms');
+
   focus=lens.zoomIn();
   assert.equal(focus.level,LENS_LEVELS.OBJECT);
   assert.ok(focus.targetId);
