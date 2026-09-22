@@ -110,9 +110,21 @@ export function createSemanticLens({
     return setFocus(LENS_LEVELS.SURFACE,surfaceId,{parentId:text(getSelectedWorldId())||null});
   }
 
+  function surfaceForRoom(roomId){
+    const mapping={
+      "room-profile":"profile",
+      "room-contract":"contracts",
+      "room-arena":"arena",
+      "room-nft":"nft",
+      "room-prime":"prime"
+    };
+    return listSurfaces().find(surface=>surface.id===mapping[roomId])||listSurfaces().find(surface=>surface.id==="rooms");
+  }
+
   function focusRoom(roomId){
     const room=getRoom(roomId);
-    return setFocus(LENS_LEVELS.ROOM,roomId,{parentId:room?.realityId||text(getSelectedWorldId())||null});
+    const surface=surfaceForRoom(roomId);
+    return setFocus(LENS_LEVELS.ROOM,roomId,{parentId:surface?.id||null});
   }
 
   function focusObject(objectId){
