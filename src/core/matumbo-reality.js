@@ -96,7 +96,10 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
   }
   function selectSurface(id){
     if(!state.surfaces.some(x=>x.id===id)) throw new TypeError("unknown maTumbo surface");
-    state.activeSurface=id; log("surface-opened",{id}); return snapshot();
+    state.activeSurface=id;
+    log("surface-opened",{id});
+    if(semanticLens && semanticLens.targetId!==id) semanticLens.focusSurface(id);
+    return snapshot();
   }
   function createStarterContracts(){
     if(contracts.list().length) return contracts.list();
@@ -139,6 +142,7 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
     onRoomFocus:()=>{state.activeSurface="rooms";},
     onFocus:focus=>{
       state.lens.focus=clone(focus);
+      if(focus.level==="room"||focus.level==="object"||focus.level==="interaction") state.activeSurface="rooms";
       log("lens-focus",{level:focus.level,targetId:focus.targetId,scale:focus.scale});
     }
   });
