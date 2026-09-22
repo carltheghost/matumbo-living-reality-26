@@ -1,4 +1,5 @@
 import {createOutcomeContracts,SIMULATION_UNIT} from './outcome-contracts.js';
+import {addCausalEvent} from './causality.js';
 import {createAirTyping} from '../input/air-typing.js';
 import {createHandLens} from '../input/hand-lens.js';
 
@@ -124,6 +125,8 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
   function rehearse(contractId,result){
     const graded=contracts.grade(contractId,result);
     const settled=contracts.settle(contractId);
+    const reality=engine.get(settled.realityId);
+    addCausalEvent(reality,{id:"contract:"+contractId+":"+reality.historyLog.length,type:"contract-graded",actorIds:["operator"],causes:reality.entities.map(entity=>entity.id).slice(0,4),effects:[contractId],time:reality.time,metadata:{result:graded.result,digest:graded.grading?.digest,simulation:true}});
     log("contract-graded",{contractId,result:graded.result,digest:graded.grading?.digest});
     return settled;
   }
@@ -198,6 +201,8 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
       realSettlement:false,
       custody:false
     };
+    const reality=engine.get(engine.selectedId);
+    addCausalEvent(reality,{id:receipt.id,type:"payment-rehearsal",actorIds:[participant],causes:[],effects:[resource],time:reality.time,metadata:receipt});
     log("t402-payment-rehearsal",receipt);
     return clone(receipt);
   }
@@ -216,6 +221,8 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
       execution:"local-plan-only",
       network:false
     };
+    const reality=engine.get(engine.selectedId);
+    addCausalEvent(reality,{id:"agent:"+String(state.ledger.length+1),type:"agent-plan",actorIds:[state.agents.controller],causes:[],effects:["workspace:"+state.activeSurface],time:reality.time,metadata:{task:plan.task,execution:plan.execution}});
     log("agent-plan",plan);
     return clone(plan);
   }
