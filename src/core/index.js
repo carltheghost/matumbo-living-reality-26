@@ -8,3 +8,5 @@ export {createOutcomeContracts, OUTCOME_CONTRACT_SCHEMA, SIMULATION_UNIT, STATUS
 export {createMatumboReality, MATUMBO_REALITY_SCHEMA, SURFACES, ROOMS, WARDROBE, BLOCKS} from './matumbo-reality.js';
 export {createAirTyping, AIR_TYPING_SCHEMA, DEBOUNCE_MS, TAP_COMPLETE_MS, LATERAL_MOVE_RATIO} from '../input/air-typing.js';
 export {createHandLens, normalizeHandLandmarks, classifyHandGesture, HAND_LENS_SCHEMA, GESTURES} from '../input/hand-lens.js';
+
+export {createSemanticLens, SEMANTIC_LENS_SCHEMA, LENS_LEVELS} from './reality-lens.js';
