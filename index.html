@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>maTumbo — Reality Lattice Ω</title>
+<link rel="stylesheet" href="./styles.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.179.1/examples/jsm/"}}</script>
+</head>
+<body>
+<main id="app">
+<aside class="panel left-panel">
+<div class="eyebrow">maTumbo / REALITY LATTICE Ω / .26</div>
+<h1>Reality Lattice <span>Ω</span></h1>
+<p class="lede">Physics supplies the vocabulary. The software supplies the world.</p>
+<section><div class="section-title">REALITY MAP</div><div id="reality-list" class="reality-list"></div></section>
+<section><div class="section-title">SELECTED WORLD</div><div id="selected-title" class="selected-title">Observed Reality</div><div id="selected-meta" class="meta"></div></section>
+<section><div class="section-title">OPERATIONS</div><div class="button-grid">
+<button data-action="fork">Fork</button><button data-action="mirror">Mirror / CPT</button>
+<button data-action="anti">Invert Matter</button><button data-action="custom">Custom Laws</button>
+<button data-action="rewind">Rewind</button><button data-action="observe">Observe</button>
+</div></section>
+</aside>
+<section class="stage">
+<canvas id="scene"></canvas>
+<div class="hud top-left"><div class="status-pill" id="mode-pill">OBSERVED</div><div id="breadcrumb">Reality Lattice Ω · Observed Reality</div></div>
+<div class="hud top-right">
+<div class="metric"><strong id="world-count">0</strong><span>worlds</span></div>
+<div class="metric"><strong id="edge-count">0</strong><span>relations</span></div>
+<div class="metric"><strong id="entity-count">0</strong><span>entities</span></div>
+</div>
+<div class="hud bottom"><div id="hint">Drag to orbit · scroll to scale · click a world</div></div>
+</section>
+<aside class="panel right-panel">
+<section><div class="section-title">WORLD STATE</div><pre id="state-output">{}</pre></section>
+<section><div class="section-title">REALITY CONSOLE</div>
+<form id="command-form"><input id="command" autocomplete="off" spellcheck="false" placeholder="COMPARE R-OBSERVED R-MIRROR"><button>RUN</button></form>
+<div class="command-help">fork · mirror · anti · rewind · observe · compare · trace · advance</div>
+<pre id="console-output">Reality engine booting…</pre></section>
+<section><div class="section-title">MODEL STATUS</div><div id="model-status"></div></section>
+</aside>
+</main>
+<script type="module" src="./src/app.js"></script>
+</body></html>
