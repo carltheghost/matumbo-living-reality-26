@@ -181,7 +181,7 @@ export function createOutcomeContracts({seed="matumbo-contracts",now=()=>new Dat
     const award=c.awards.find(a=>a.id===awardId);
     if(!award) throw new TypeError("unknown award");
     if(award.claimed) throw new TypeError("claimed awards cannot be transferred");
-    const nextAwards=c.awards.map(a=>a.id===awardId ? {...a,holder:safeText(holder,"unassigned"),transferredAt:timestamp()} : a);
+    const nextAwards=c.awards.map(a=>a.id===awardId ? {...a,holder:text(holder,"unassigned"),transferredAt:timestamp()} : a);
     const next={...c,awards:nextAwards};
     contracts.set(c.id,next);
     return clone(nextAwards.find(a=>a.id===awardId));
