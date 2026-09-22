@@ -122,3 +122,55 @@ test("award claims remain independently claimable",()=>{
   assert.equal(claimed.claimed,true);
   assert.equal(workspace.contracts.get(contract.id).status,"claimed");
 });
+
+import {LENS_LEVELS,SEMANTIC_LENS_SCHEMA} from '../src/core/reality-lens.js';
+
+test('Reality Lens exposes a semantic five-level focus path',()=>{
+  const workspace=createMatumboReality(createRealityLattice());
+  const lens=workspace.semanticLens;
+  assert.equal(lens.snapshot().schemaVersion,SEMANTIC_LENS_SCHEMA);
+  assert.equal(lens.level,LENS_LEVELS.WORLD);
+
+  let focus=lens.zoomIn();
+  assert.equal(focus.level,LENS_LEVELS.SURFACE);
+  assert.equal(workspace.state.activeSurface,'lattice');
+
+  focus=lens.zoomIn();
+  assert.equal(focus.level,LENS_LEVELS.ROOM);
+  assert.equal(workspace.state.activeSurface,'rooms');
+
+  focus=lens.zoomIn();
+  assert.equal(focus.level,LENS_LEVELS.OBJECT);
+  assert.ok(focus.targetId);
+
+  focus=lens.zoomIn();
+  assert.equal(focus.level,LENS_LEVELS.INTERACTION);
+  assert.equal(focus.parentId,focus.breadcrumb[focus.breadcrumb.length-2].id);
+
+  focus=lens.zoomOut();
+  assert.equal(focus.level,LENS_LEVELS.OBJECT);
+  focus=lens.zoomOut();
+  assert.equal(focus.level,LENS_LEVELS.ROOM);
+  focus=lens.zoomOut();
+  assert.equal(focus.level,LENS_LEVELS.SURFACE);
+  focus=lens.zoomOut();
+  assert.equal(focus.level,LENS_LEVELS.WORLD);
+  assert.equal(workspace.state.activeSurface,'lattice');
+});
+
+test('Reality Lens directly focuses surfaces, rooms and floating objects',()=>{
+  const workspace=createMatumboReality(createRealityLattice());
+  workspace.semanticLens.focusSurface('contracts');
+  assert.equal(workspace.semanticLens.level,LENS_LEVELS.SURFACE);
+  assert.equal(workspace.state.activeSurface,'contracts');
+
+  workspace.semanticLens.focusRoom('room-contract');
+  assert.equal(workspace.semanticLens.level,LENS_LEVELS.ROOM);
+  assert.equal(workspace.state.activeSurface,'rooms');
+
+  const block=workspace.state.blocks.find(item=>item.roomId==='room-contract');
+  workspace.semanticLens.focusObject(block.id);
+  assert.equal(workspace.semanticLens.level,LENS_LEVELS.OBJECT);
+  assert.equal(workspace.semanticLens.targetId,block.id);
+  assert.equal(workspace.state.activeSurface,'rooms');
+});
