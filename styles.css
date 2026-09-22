@@ -184,6 +184,9 @@ h1 span{color:var(--gold)}
 }
 .focus-title{font-size:26px;font-weight:750;letter-spacing:-.035em;margin-top:4px}
 .focus-meta{font-size:9px;line-height:1.65;color:var(--muted);margin-top:6px}
+.semantic-bar{display:grid;grid-template-columns:minmax(0,1fr) 28px 28px;gap:6px;align-items:center;margin-top:11px;padding:6px 7px;border:1px solid rgba(171,203,255,.11);border-radius:13px;background:rgba(0,0,0,.14)}
+.semantic-readout{min-width:0;display:flex;align-items:center;gap:7px}.semantic-readout span:first-child{font-size:7px;letter-spacing:.14em;color:var(--ice)}.semantic-readout span:last-child{min-width:0;font-size:8px;color:#9aa9c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.semantic-button{width:28px;height:28px;padding:0;display:grid;place-items:center;border-radius:9px;font-size:14px;line-height:1}.semantic-button:disabled{opacity:.28;cursor:default;transform:none;box-shadow:none}
 .focus-divider{height:1px;background:linear-gradient(90deg,var(--line-hot),transparent);margin:12px 0}
 .focus-actions{display:flex;flex-wrap:wrap;gap:6px}
 .focus-actions button{font-size:8px;padding:7px 9px}
