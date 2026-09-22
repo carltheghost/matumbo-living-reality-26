@@ -1,1 +1,124 @@
-export const AIR_TYPING_SCHEMA = "matumbo-air-typing-0.26";\nexport const DEBOUNCE_MS = 250;\nexport const TAP_COMPLETE_MS = 90;\nexport const LATERAL_MOVE_RATIO = 0.12;\n\nconst safe = value => value == null ? "" : String(value);\n\nexport function createAirTyping({ onControlKey = null } = {}) {\n  let keyMap = [];\n  let layer = "letters";\n  let shiftArmed = false;\n  const lastFire = new Map();\n  const pending = new Map();\n\n  function hitTest(x, y) {\n    return keyMap.find(entry => {\n      const r = entry.rect || {};\n      return x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;\n    }) || null;\n  }\n\n  function resolve(keyId) {\n    if (keyId === "Backspace") return { type: "backspace" };\n    if (keyId === "Enter") return { type: "enter" };\n    if (keyId === "Dismiss") return { type: "dismiss" };\n    if (keyId === "Symbols") {\n      layer = layer === "symbols" ? "letters" : "symbols";\n      if (typeof onControlKey === "function") onControlKey("Symbols", layer === "symbols");\n      return { type: "symbols", layer };\n    }\n    if (keyId === "Shift") {\n      shiftArmed = !shiftArmed;\n      if (typeof onControlKey === "function") onControlKey("Shift", shiftArmed);\n      return null;\n    }\n    if (keyId === " ") return { type: "char", char: " " };\n    let ch = safe(keyId);\n    if (layer === "letters" && ch.length === 1) ch = ch.toLowerCase();\n    if (shiftArmed && ch.length === 1 && /[a-z]/.test(ch)) {\n      ch = ch.toUpperCase();\n      shiftArmed = false;\n    }\n    return { type: "char", char: ch };\n  }\n\n  function fire(keyId, nowMs) {\n    const last = lastFire.get(keyId) ?? -Infinity;\n    if (nowMs - last < DEBOUNCE_MS) return null;\n    lastFire.set(keyId, nowMs);\n    return resolve(keyId);\n  }\n\n  function flush(nowMs) {\n    const out = [];\n    for (const [finger, tap] of pending) {\n      if (tap.cancelled) { pending.delete(finger); continue; }\n      if (nowMs - tap.t0 >= TAP_COMPLETE_MS) {\n        pending.delete(finger);\n        if (tap.key) { const event = fire(tap.key, nowMs); if (event) out.push(event); }\n      }\n    }\n    return out;\n  }\n\n  function setKeyMap(rects) {\n    keyMap = Array.isArray(rects) ? rects.filter(x => x && x.rect).map(x => ({ key: safe(x.key), rect: { ...x.rect } })) : [];\n  }\n  function setLayer(next) { if (next === "letters" || next === "symbols") layer = next; }\n  function setShiftArmed(next) { shiftArmed = Boolean(next); }\n\n  function registerTap(fingerId, x, y, nowMs) {\n    const completed = flush(nowMs);\n    if (pending.size >= 10 && !pending.has(fingerId)) pending.delete(pending.keys().next().value);\n    const hit = hitTest(x, y);\n    pending.set(fingerId, { x0: x, t0: nowMs, key: hit?.key ?? null, rect: hit?.rect ?? null, cancelled: false });\n    return completed;\n  }\n\n  function registerMove(fingerId, x, nowMs) {\n    const completed = flush(nowMs);\n    const tap = pending.get(fingerId);\n    if (tap?.rect && Math.abs(x - tap.x0) > tap.rect.w * LATERAL_MOVE_RATIO) tap.cancelled = true;\n    return completed;\n  }\n\n  return {\n    setKeyMap,\n    setLayer,\n    setShiftArmed,\n    registerTap,\n    registerMove,\n    poll: flush,\n    getState: () => ({ schemaVersion: AIR_TYPING_SCHEMA, layer, shiftArmed, pendingFingers: pending.size })\n  };\n}
+export const AIR_TYPING_SCHEMA = "matumbo-air-typing-0.26";
+export const DEBOUNCE_MS = 250;
+export const TAP_COMPLETE_MS = 90;
+export const LATERAL_MOVE_RATIO = 0.12;
+
+const safe = value => value == null ? "" : String(value);
+
+export function createAirTyping({ onControlKey = null } = {}) {
+  let keyMap = [];
+  let layer = "letters";
+  let shiftArmed = false;
+  const lastFire = new Map();
+  const pending = new Map();
+
+  function hitTest(x, y) {
+    return keyMap.find(entry => {
+      const r = entry.rect || {};
+      return x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
+    }) || null;
+  }
+
+  function resolve(keyId) {
+    if (keyId === "Backspace") return { type: "backspace" };
+    if (keyId === "Enter") return { type: "enter" };
+    if (keyId === "Dismiss") return { type: "dismiss" };
+    if (keyId === "Symbols") {
+      layer = layer === "symbols" ? "letters" : "symbols";
+      if (typeof onControlKey === "function") onControlKey("Symbols", layer === "symbols");
+      return { type: "symbols", layer };
+    }
+    if (keyId === "Shift") {
+      shiftArmed = !shiftArmed;
+      if (typeof onControlKey === "function") onControlKey("Shift", shiftArmed);
+      return null;
+    }
+    if (keyId === " ") return { type: "char", char: " " };
+    let ch = safe(keyId);
+    if (layer === "letters" && ch.length === 1) ch = ch.toLowerCase();
+    if (shiftArmed && ch.length === 1 && /[a-z]/.test(ch)) {
+      ch = ch.toUpperCase();
+      shiftArmed = false;
+    }
+    return { type: "char", char: ch };
+  }
+
+  function fire(keyId, nowMs) {
+    const last = lastFire.get(keyId) ?? -Infinity;
+    if (nowMs - last < DEBOUNCE_MS) return null;
+    lastFire.set(keyId, nowMs);
+    return resolve(keyId);
+  }
+
+  function flush(nowMs) {
+    const out = [];
+    for (const [finger, tap] of pending) {
+      if (tap.cancelled) {
+        pending.delete(finger);
+        continue;
+      }
+      if (nowMs - tap.t0 >= TAP_COMPLETE_MS) {
+        pending.delete(finger);
+        if (tap.key) {
+          const event = fire(tap.key, nowMs);
+          if (event) out.push(event);
+        }
+      }
+    }
+    return out;
+  }
+
+  function setKeyMap(rects) {
+    keyMap = Array.isArray(rects)
+      ? rects.filter(x => x && x.rect).map(x => ({ key: safe(x.key), rect: { ...x.rect } }))
+      : [];
+  }
+
+  function setLayer(next) {
+    if (next === "letters" || next === "symbols") layer = next;
+  }
+
+  function setShiftArmed(next) {
+    shiftArmed = Boolean(next);
+  }
+
+  function registerTap(fingerId, x, y, nowMs) {
+    const completed = flush(nowMs);
+    if (pending.size >= 10 && !pending.has(fingerId)) {
+      pending.delete(pending.keys().next().value);
+    }
+    const hit = hitTest(x, y);
+    pending.set(fingerId, {
+      x0: x,
+      t0: nowMs,
+      key: hit?.key ?? null,
+      rect: hit?.rect ?? null,
+      cancelled: false
+    });
+    return completed;
+  }
+
+  function registerMove(fingerId, x, nowMs) {
+    const completed = flush(nowMs);
+    const tap = pending.get(fingerId);
+    if (tap?.rect && Math.abs(x - tap.x0) > tap.rect.w * LATERAL_MOVE_RATIO) {
+      tap.cancelled = true;
+    }
+    return completed;
+  }
+
+  return {
+    setKeyMap,
+    setLayer,
+    setShiftArmed,
+    registerTap,
+    registerMove,
+    poll: flush,
+    getState: () => ({
+      schemaVersion: AIR_TYPING_SCHEMA,
+      layer,
+      shiftArmed,
+      pendingFingers: pending.size
+    })
+  };
+}
