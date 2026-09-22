@@ -6,3 +6,5 @@ export {addCausalEvent, canReach, causalSummary} from './causality.js';
 export {stepReality, simulationInfo} from './physics-simulation.js';
 export {createOutcomeContracts, OUTCOME_CONTRACT_SCHEMA, SIMULATION_UNIT, STATUSES} from './outcome-contracts.js';
 export {createMatumboReality, MATUMBO_REALITY_SCHEMA, SURFACES, ROOMS, WARDROBE, BLOCKS} from './matumbo-reality.js';
+export {createAirTyping, AIR_TYPING_SCHEMA, DEBOUNCE_MS, TAP_COMPLETE_MS, LATERAL_MOVE_RATIO} from '../input/air-typing.js';
+export {createHandLens, normalizeHandLandmarks, classifyHandGesture, HAND_LENS_SCHEMA, GESTURES} from '../input/hand-lens.js';
