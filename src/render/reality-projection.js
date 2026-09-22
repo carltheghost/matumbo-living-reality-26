@@ -91,6 +91,7 @@ export function createRealityProjection(canvas,engine,workspace=null){
   const workspaceObjects=new Map();
   const workspaceMaterials=new Set();
   let surfaceSelectHandler=null;
+  let semanticFocusHandler=null;
 
   const lensMaterial=new THREE.MeshBasicMaterial({
     color:0x79d9ff,transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false
@@ -420,6 +421,16 @@ export function createRealityProjection(canvas,engine,workspace=null){
     }
     updatePointer(event);
 
+    const objectHit=ray.intersectObjects([...workspaceObjects.values()],true)[0];
+    if(objectHit){
+      const objectId=objectHit.object.userData?.blockId;
+      if(objectId&&workspace?.semanticLens?.focusObject){
+        const focus=workspace.semanticLens.focusObject(objectId);
+        semanticFocusHandler?.(focus);
+        return true;
+      }
+    }
+
     const surfaceHit=ray.intersectObjects([...surfaceNodes.values()],true)[0];
     if(surfaceHit){
       const surfaceId=surfaceHit.object.userData?.surfaceId||surfaceHit.object.parent?.userData?.surfaceId;
@@ -438,6 +449,7 @@ export function createRealityProjection(canvas,engine,workspace=null){
     const id=worldHit.object.userData?.realityId||worldHit.object.parent?.userData?.realityId;
     if(!id)return false;
     engine.select(id);
+    if(workspace?.semanticLens?.focusWorld) semanticFocusHandler?.(workspace.semanticLens.focusWorld(id));
     rebuild();
     return true;
   }
@@ -465,10 +477,12 @@ export function createRealityProjection(canvas,engine,workspace=null){
     }
 
     for(const [id,group] of surfaceNodes){
+      const focus=workspace?.semanticLens?.snapshot?.();
+      const focused=focus?.level==='surface'&&focus.targetId===id;
       const active=id===workspace?.state?.activeSurface;
       const pulse=1+Math.sin(t*2.2+id.length)*.045;
       group.position.y=Number(group.userData.baseY||0)+Math.sin(t*1.2+id.length)*.12;
-      group.scale.setScalar((active?1.23:1)*pulse);
+      group.scale.setScalar(((focused||active)?1.23:1)*pulse);
       group.rotation.y=t*(active?.28:.08);
     }
 
@@ -486,12 +500,18 @@ export function createRealityProjection(canvas,engine,workspace=null){
       object.rotation.y+=.0015*(index+1);
       const active=workspace?.surface?.id;
       const type=object.userData.blockType;
+      const focus=workspace?.semanticLens?.snapshot?.();
+      const objectFocused=focus?.level==='object'&&focus.targetId===object.userData.blockId;
+      const interactionFocused=focus?.level==='interaction'&&focus.parentId===object.userData.blockId;
+      const roomFocused=focus?.level==='room'&&workspace?.state?.blocks?.find(item=>item.id===object.userData.blockId)?.roomId===focus.targetId;
       const boost=
         active==='contracts'&&type==='contract' ||
         active==='lens'&&(type==='lens'||type==='input') ||
         active==='nft'&&type==='nft' ||
         active==='prime'&&type==='fabric';
-      object.scale.setScalar((boost?1.35:1)*(type==='lens'?1.1:1));
+      const semanticBoost=objectFocused||interactionFocused?2.05:roomFocused?1.48:1;
+      if(object.material?.opacity!==undefined) object.material.opacity=objectFocused||interactionFocused?.98:roomFocused?.58:.9;
+      object.scale.setScalar((boost?1.35:1)*semanticBoost*(type==='lens'?1.1:1));
     });
 
     controls.update();
@@ -504,6 +524,10 @@ export function createRealityProjection(canvas,engine,workspace=null){
     animate,
     setSurfaceHandler(handler){
       surfaceSelectHandler=typeof handler==='function'?handler:null;
+      return this;
+    },
+    setSemanticFocusHandler(handler){
+      semanticFocusHandler=typeof handler==='function'?handler:null;
       return this;
     },
     select(id){
