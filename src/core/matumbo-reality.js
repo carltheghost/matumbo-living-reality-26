@@ -142,7 +142,9 @@ export function createMatumboReality(engine,{seed="matumbo-reality"}={}){
     onRoomFocus:()=>{state.activeSurface="rooms";},
     onFocus:focus=>{
       state.lens.focus=clone(focus);
-      if(focus.level==="room"||focus.level==="object"||focus.level==="interaction") state.activeSurface="rooms";
+      if(focus.level==="world") state.activeSurface="lattice";
+      else if(focus.level==="surface") state.activeSurface=focus.targetId;
+      else if(focus.level==="room"||focus.level==="object"||focus.level==="interaction") state.activeSurface="rooms";
       log("lens-focus",{level:focus.level,targetId:focus.targetId,scale:focus.scale});
     }
   });
