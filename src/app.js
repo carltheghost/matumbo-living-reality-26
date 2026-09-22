@@ -106,6 +106,12 @@ function renderSurfaceState(){
     out.innerHTML='<div class="surface-card"><strong>Prime Ledger</strong><span>'+workspace.state.primeChain.dimensions+' · '+workspace.state.primeChain.fabric+'</span></div>'+workspace.state.ledger.slice(0,8).map(e=>'<div class="surface-row"><strong>'+e.action+'</strong><span>'+JSON.stringify(e.detail).slice(0,70)+'</span></div>').join('');
   } else if(surface.id==='prime'){
     out.innerHTML='<div class="surface-card"><strong>Prime Chain / Link</strong><span>status: '+workspace.state.primeChain.status+'</span></div>'+workspace.state.primeChain.principles.map(p=>'<span class="tag">'+p+'</span>').join('')+'<div class="surface-card"><strong>Settlement boundary</strong><span>realSettlement='+workspace.state.primeChain.realSettlement+' · realCustody='+workspace.state.primeChain.realCustody+'</span></div>';
+  } else if(surface.id==='commerce'){
+    out.innerHTML='<div class="surface-card"><strong>t402 / PAYCORE</strong><span>payment-required rehearsal rail · '+workspace.state.contractUnit+' · no real value</span></div><div class="surface-row"><strong>Network</strong><span>LOCAL ONLY</span></div><div class="surface-row"><strong>Settlement</strong><span>SIMULATED / OFF</span></div><button id="pay-test">Rehearse payment for selected reality</button>';
+    $('#pay-test').onclick=()=>{$('#console-output').textContent=pretty(workspace.rehearsePayment({resource:'reality://'+engine.selectedId,amount:12}));renderAll()};
+  } else if(surface.id==='agents'){
+    out.innerHTML='<div class="surface-card"><strong>Agent Fabric</strong><span>'+workspace.state.agents.controller+' coordinates a bounded local plan.</span></div><div class="surface-card"><strong>Workers</strong><span>'+workspace.state.agents.workers.join(' · ')+'</span></div><div class="surface-card"><strong>Reviewer</strong><span>'+workspace.state.agents.reviewer+' · execution '+workspace.state.agents.autonomy+'</span></div><button id="agent-plan">Generate local plan</button>';
+    $('#agent-plan').onclick=()=>{$('#console-output').textContent=pretty(workspace.agentPlan('coordinate the selected maTumbo surface'));renderAll()};
   } else {
     out.innerHTML='<div class="surface-card"><strong>Reality substrate</strong><span>'+surface.description+'</span></div><div class="surface-row"><strong>Selected</strong><span>'+engine.selectedId+'</span></div><div class="surface-row"><strong>History</strong><span>'+engine.history.length+' engine actions</span></div>';
   }
@@ -128,7 +134,9 @@ function renderOverlay(){
     nft:[['Open Contract Atelier','contracts'],['Prime Ledger','ledger']],
     ledger:[['Contract Atelier','contracts'],['Prime Chain','prime']],
     lens:[['Toggle Camera','camera'],['Profile Studio','profile'],['Air Keyboard','air-keyboard']],
-    prime:[['Prime Ledger','ledger'],['Reality Lattice','lattice'],['Contracts','contracts']]
+    prime:[['Prime Ledger','ledger'],['Reality Lattice','lattice'],['Contracts','contracts']],
+    commerce:[['Rehearse t402','pay'],['Prime Ledger','ledger'],['Contract Atelier','contracts']],
+    agents:[['Generate plan','agent-plan'],['Memory / Docs','agents'],['Reality Lattice','lattice']]
   }[surface.id]||[];
   for(const [label,action] of quick){
     const b=document.createElement('button');b.textContent=label;b.onclick=()=>quickAction(action);actions.append(b);
@@ -145,7 +153,9 @@ function quickAction(action){
     else if(['pawn','knight','bishop','rook','queen-king'].includes(action))workspace.setChessRole(action)
     else if(['obsidian','ivory-gold','explorer','research'].includes(action))workspace.equip(action)
     else if(action==='camera')workspace.toggleCamera(!workspace.state.lens.cameraEnabled)
-    else if(action==='air-keyboard')workspace.selectSurface('lens');
+    else if(action==='air-keyboard')workspace.selectSurface('lens')
+    else if(action==='pay')workspace.rehearsePayment({resource:'reality://'+engine.selectedId,amount:12})
+    else if(action==='agent-plan')workspace.agentPlan('coordinate the selected maTumbo surface');
     renderAll();
   }catch(err){$('#console-output').textContent='ERROR: '+err.message}
 }
@@ -170,7 +180,9 @@ function renderSystem(){
     ['Contracts','local rehearsal only','no wallet / custody / real money'],
     ['Lens','camera '+(workspace.state.lens.cameraEnabled?'enabled':'OFF'),'local device / explicit toggle'],
     ['Luna','scripted guide','no model / network / session memory'],
-    ['Prime','simulated fabric','ledger + information receipts']
+    ['Prime','simulated fabric','ledger + information receipts'],
+    ['Commerce','t402 / PAYCORE rehearsal','no real settlement'],
+    ['Agents','Controller + workers + reviewer','local-plan-only']
   ].map(x=>'<div class="model-row"><strong>'+x[0]+' · '+x[1]+'</strong><span>'+x[2]+'</span></div>').join('');
 }
 
