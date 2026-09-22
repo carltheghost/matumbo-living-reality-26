@@ -416,3 +416,178 @@ pre{
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+/* --- cinematic Reality Lens presentation --- */
+:root{
+  --glass-border:rgba(181,218,255,.19);
+  --glass-shine:rgba(226,242,255,.07);
+  --cyan-glow:0 0 30px rgba(91,202,255,.22),0 0 90px rgba(91,202,255,.08);
+}
+.stage{background:
+  radial-gradient(ellipse at 50% 46%,rgba(38,83,145,.16),transparent 26%),
+  radial-gradient(ellipse at 50% 74%,rgba(93,56,153,.11),transparent 30%);
+}
+.stage::before{
+  background:
+    radial-gradient(circle at 50% 47%,transparent 0,transparent 24%,rgba(0,0,0,.08) 46%,rgba(0,0,0,.62) 100%),
+    linear-gradient(90deg,rgba(0,0,0,.3),transparent 18%,transparent 82%,rgba(0,0,0,.26));
+}
+.stage::after{
+  background:
+    linear-gradient(180deg,rgba(235,246,255,.035),transparent 13%,transparent 87%,rgba(235,246,255,.025)),
+    repeating-radial-gradient(circle at 50% 47%,transparent 0 78px,rgba(110,176,255,.018) 80px 81px);
+  mix-blend-mode:screen;
+}
+.glass-card{
+  border-color:var(--glass-border);
+  background:
+    linear-gradient(145deg,rgba(13,23,42,.71),rgba(5,10,20,.47)),
+    linear-gradient(120deg,rgba(255,255,255,.035),transparent 28%);
+  box-shadow:
+    0 24px 80px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 0 35px rgba(117,173,255,.018);
+}
+.brand-float{
+  width:min(425px,calc(100vw - 42px));
+  border-radius:20px;
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.06),0 0 50px rgba(77,145,220,.05);
+}
+.brand-float::after{
+  content:"";
+  position:absolute;
+  left:16px;right:16px;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(142,219,255,.5),transparent);
+  opacity:.55;
+}
+.world-orbit{
+  width:262px;
+  top:92px;
+  border-radius:22px;
+  padding:13px;
+}
+.orbit-head{padding:1px 2px 4px}
+.reality-list{gap:7px;max-height:53vh}
+.reality-item{
+  min-height:48px;
+  border-radius:15px;
+  padding:8px 9px;
+  background:
+    radial-gradient(circle at 8% 50%,rgba(120,200,255,.05),transparent 30%),
+    rgba(255,255,255,.02);
+}
+.reality-item.active{
+  box-shadow:0 0 30px rgba(71,184,244,.12),inset 0 0 28px rgba(71,184,244,.045);
+}
+.reality-dot{
+  width:11px;height:11px;
+  border:1px solid currentColor;
+}
+.reality-name{font-size:10.5px}
+.surface-dock{
+  width:min(372px,calc(100vw - 42px));
+  border-radius:22px;
+  padding:12px 13px 13px;
+}
+.surface-list{gap:6px}
+.surface-item{
+  min-height:43px;
+  border-radius:14px;
+  padding:7px 8px;
+}
+.surface-item .surface-name{font-size:8.3px}
+.focus-card{
+  width:min(400px,40vw);
+  min-width:300px;
+  padding:20px;
+  border-radius:30px;
+  box-shadow:
+    0 32px 110px rgba(0,0,0,.5),
+    0 0 70px rgba(84,180,255,.075),
+    inset 0 1px 0 rgba(255,255,255,.07);
+}
+.focus-card::before,.focus-card::after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  border-radius:50%;
+}
+.focus-card::before{
+  inset:-28px;
+  border:1px solid rgba(142,219,255,.08);
+  box-shadow:0 0 36px rgba(109,190,255,.08);
+}
+.focus-card::after{
+  inset:-58px;
+  border:1px solid rgba(185,141,255,.055);
+}
+.focus-glow{
+  width:260px;height:260px;
+  right:-115px;top:-115px;
+  background:radial-gradient(circle,rgba(104,203,255,.17),rgba(117,143,255,.035) 45%,transparent 72%);
+}
+.focus-kicker{color:#93a8c6}
+.focus-title{font-size:28px}
+.semantic-bar{
+  background:linear-gradient(90deg,rgba(13,30,50,.5),rgba(12,16,31,.18));
+  box-shadow:inset 0 0 20px rgba(108,190,255,.03);
+}
+.focus-actions button{
+  background:rgba(7,13,25,.58);
+  border-color:rgba(171,203,255,.13);
+}
+.metrics-float{
+  border-radius:18px;
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.metric strong{text-shadow:0 0 20px rgba(142,219,255,.18)}
+.surface-overlay{
+  width:min(610px,calc(100vw - 560px));
+  min-width:400px;
+  border-radius:21px;
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.lens-badge{
+  top:calc(50% + 197px);
+  padding:8px 12px;
+  box-shadow:0 10px 35px rgba(0,0,0,.28),var(--cyan-glow);
+}
+.lens-orb{width:9px;height:9px}
+.lens-badge strong{font-size:8.5px}
+.tool-rail{
+  top:50%;
+  padding:7px;
+  border-radius:20px;
+  background:linear-gradient(160deg,rgba(11,19,35,.78),rgba(5,10,19,.5));
+}
+.rail-button{
+  width:47px;height:47px;
+  border-radius:14px;
+}
+.rail-button span{
+  font-size:15px;
+  text-shadow:0 0 18px currentColor;
+}
+.luna-dock{
+  width:224px;
+  padding:11px;
+  border-radius:19px;
+  box-shadow:var(--shadow),0 0 40px rgba(163,113,255,.05);
+}
+.luna-mark{
+  width:30px;height:30px;
+  box-shadow:0 0 22px rgba(185,141,255,.16),inset 0 0 14px rgba(185,141,255,.08);
+}
+.bottom-actions{bottom:22px}
+.floating-button{backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+.toast{box-shadow:0 10px 40px rgba(0,0,0,.4),0 0 30px rgba(142,219,255,.08)}
+@media(max-width:1180px){
+  .world-orbit{width:225px}
+  .surface-overlay{width:min(510px,calc(100vw - 500px))}
+}
+@media(max-width:900px){
+  .world-orbit{top:94px;width:205px}
+  .surface-dock{width:315px}
+  .focus-card{width:min(355px,52vw)}
+  .surface-overlay{width:410px}
+}
