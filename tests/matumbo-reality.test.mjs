@@ -57,3 +57,42 @@ test('scripted Luna is local and network-free',()=>{
   assert.match(workspace.companionResponse('open contract'),/Contract Atelier/);
   assert.equal(workspace.state.companion.network,false);
 });
+
+
+import {createAirTyping} from '../src/input/air-typing.js';
+import {createHandLens,classifyHandGesture,normalizeHandLandmarks} from '../src/input/hand-lens.js';
+
+test('t402 and agent fabric stay local and simulated',()=>{
+  const workspace=createMatumboReality(createRealityLattice());
+  const receipt=workspace.rehearsePayment({resource:'reality://R-OBSERVED',amount:12});
+  const plan=workspace.agentPlan('wire contracts into reality');
+  assert.equal(receipt.protocol,'t402');
+  assert.equal(receipt.rail,'PAYCORE');
+  assert.equal(receipt.realMoney,false);
+  assert.equal(receipt.realSettlement,false);
+  assert.equal(plan.network,false);
+  assert.equal(plan.execution,'local-plan-only');
+});
+
+test('Air Keyboard emits a delayed character and supports one-shot shift',()=>{
+  const typing=createAirTyping();
+  typing.setKeyMap([{key:'a',rect:{x:0,y:0,w:1,h:1}},{key:'Shift',rect:{x:1,y:0,w:1,h:1}}]);
+  typing.registerTap(1,0.5,0.5,0);
+  assert.deepEqual(typing.poll(100),[{type:'char',char:'a'}]);
+  typing.registerTap(1,1.5,0.5,200);
+  typing.poll(300);
+  typing.registerTap(1,0.5,0.5,400);
+  assert.deepEqual(typing.poll(500),[{type:'char',char:'A'}]);
+});
+
+test('Hand Lens normalizes two hands and recognizes pinch',()=>{
+  const hands=[Array.from({length:21},()=>({x:.5,y:.5,z:0})),Array.from({length:21},()=>({x:.2,y:.3,z:0}))];
+  hands[0][4]={x:.50,y:.50,z:0};
+  hands[0][8]={x:.52,y:.52,z:0};
+  const normalized=normalizeHandLandmarks(hands);
+  assert.equal(normalized.length,2);
+  assert.equal(classifyHandGesture(normalized[0]),'pinch');
+  const lens=createHandLens({now:()=>123});
+  lens.setEnabled(true);
+  assert.equal(lens.update(hands).events[0].gesture,'pinch');
+});
