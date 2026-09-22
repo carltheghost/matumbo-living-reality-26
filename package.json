@@ -1,6 +1,6 @@
 {
   "name": "@matumbo/reality-lattice-omega",
-  "version": "0.26.0",
+  "version": "0.26.1",
   "private": true,
   "type": "module",
   "description": "Experimental programmable reality/world-model engine for maTumbo Living Reality Ω.",
@@ -10,7 +10,10 @@
     "./engine": "./src/core/reality-engine.js",
     "./state": "./src/core/reality-state.js",
     "./physics": "./src/core/physics-rules.js",
-    "./transforms": "./src/core/transformations.js"
+    "./transforms": "./src/core/transformations.js",
+    "./contracts": "./src/core/outcome-contracts.js",
+    "./reality": "./src/core/matumbo-reality.js",
+    "./lens": "./src/core/reality-lens.js"
   },
   "engines": {"node": ">=20"}
 }
