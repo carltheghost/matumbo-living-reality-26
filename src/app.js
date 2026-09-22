@@ -82,6 +82,18 @@ function renderWorlds(){
   }
 }
 
+function renderLensFocus(){
+  const focus=workspace.semanticLens.snapshot();
+  const levelLabel=focus.level.toUpperCase();
+  const path=focus.breadcrumb.map(item=>item.label).join('  /  ');
+  $('#lens-level').textContent=levelLabel;
+  $('#lens-path').textContent=path||focus.description.label;
+  $('#lens-out').disabled=focus.level==='world';
+  $('#lens-in').disabled=focus.level==='interaction';
+  $('#lens-out').title=focus.level==='world'?'Already at world scale':'Zoom out';
+  $('#lens-in').title=focus.level==='interaction'?'Already at interaction scale':'Zoom in';
+}
+
 function renderWorldState(){
   const state=engine.get(engine.selectedId);
   $('#selected-title').textContent=state.name;
@@ -89,6 +101,7 @@ function renderWorldState(){
     'kind '+state.kind+' · category '+state.category+' · '+state.lawSetId+
     ' · t='+state.time.toFixed(2)+' · entropy='+state.entropy.toFixed(2)+
     ' · dimensions='+state.dimension.spatial+'+1';
+  renderLensFocus();
   $('#state-output').textContent=pretty({
     id:state.id,
     name:state.name,
@@ -345,6 +358,7 @@ function quickAction(action){
   try{
     if(SURFACES.has(action)){
       workspace.selectSurface(action);
+      workspace.semanticLens.focusSurface(action);
       toast(workspace.surface.label);
     }else if(action==='fork'||action==='mirror'){
       apply(action);
@@ -445,10 +459,21 @@ function wireShell(){
     const dock=$('.surface-dock');
     dock.dataset.open=dock.dataset.open==='true'?'false':'true';
   };
+  $('#lens-in').onclick=()=>{
+    const focus=workspace.semanticLens.zoomIn();
+    toast('Lens → '+focus.description.label);
+    renderAll();
+  };
+  $('#lens-out').onclick=()=>{
+    const focus=workspace.semanticLens.zoomOut();
+    toast('Lens → '+focus.description.label);
+    renderAll();
+  };
 
   document.querySelectorAll('[data-surface]').forEach(button=>{
     button.addEventListener('click',()=>{
       workspace.selectSurface(button.dataset.surface);
+      workspace.semanticLens.focusSurface(button.dataset.surface);
       toast(workspace.surface.label);
       renderAll();
     });
@@ -505,6 +530,7 @@ $('#command-form').addEventListener('submit',event=>{
     $('#console-output').textContent=pretty(result);
     if(result?.id&&engine.realties.has(result.id)){
       engine.select(result.id);
+      workspace.semanticLens.focusWorld(result.id);
     }
     toast('Command '+command+' applied');
     renderAll();
