@@ -358,7 +358,6 @@ function quickAction(action){
   try{
     if(SURFACES.has(action)){
       workspace.selectSurface(action);
-      workspace.semanticLens.focusSurface(action);
       toast(workspace.surface.label);
     }else if(action==='fork'||action==='mirror'){
       apply(action);
@@ -473,7 +472,6 @@ function wireShell(){
   document.querySelectorAll('[data-surface]').forEach(button=>{
     button.addEventListener('click',()=>{
       workspace.selectSurface(button.dataset.surface);
-      workspace.semanticLens.focusSurface(button.dataset.surface);
       toast(workspace.surface.label);
       renderAll();
     });
