@@ -96,3 +96,11 @@ test('Hand Lens normalizes two hands and recognizes pinch',()=>{
   lens.setEnabled(true);
   assert.equal(lens.update(hands).events[0].gesture,'pinch');
 });
+
+test("floating blocks persist movement in workspace state",()=>{
+  const workspace=createMatumboReality(createRealityLattice());
+  const block=workspace.state.blocks.find(item=>item.id==="block-prime");
+  const moved=workspace.moveBlock(block.id,[3,1.25,-2]);
+  assert.deepEqual(moved.position,[3,1.25,-2]);
+  assert.deepEqual(workspace.state.blocks.find(item=>item.id===block.id).position,[3,1.25,-2]);
+});
