@@ -121,6 +121,8 @@ h1 span{color:var(--gold)}
 .orbit-head,.dock-head,.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .orbit-copy,.dock-copy,.drawer-copy{font-size:8px;color:#687891;margin-top:3px}
 .icon-button{padding:5px 8px;font-size:7px;letter-spacing:.1em}
+.world-orbit[data-open="false"] .reality-list{display:none}
+.surface-dock[data-open="false"] .surface-list{display:none}
 .reality-list,.surface-list{display:grid;gap:5px;margin-top:9px;max-height:38vh;overflow:auto;padding-right:2px}
 .reality-item,.surface-item{
   width:100%;
