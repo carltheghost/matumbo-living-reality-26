@@ -104,3 +104,21 @@ test("floating blocks persist movement in workspace state",()=>{
   assert.deepEqual(moved.position,[3,1.25,-2]);
   assert.deepEqual(workspace.state.blocks.find(item=>item.id===block.id).position,[3,1.25,-2]);
 });
+test("award claims remain independently claimable",()=>{
+  const workspace=createMatumboReality(createRealityLattice());
+  const contract=workspace.contracts.createContract({id:"OCT-MULTI-001",eventId:"multi",eventLabel:"Multi award rehearsal",outcomes:["YES","NO"],realityId:"R-OBSERVED"});
+  workspace.contracts.join(contract.id,{participant:"alice",outcome:"YES",amount:50,idempotencyKey:"alice"});
+  workspace.contracts.join(contract.id,{participant:"bob",outcome:"YES",amount:50,idempotencyKey:"bob"});
+  workspace.contracts.join(contract.id,{participant:"carol",outcome:"NO",amount:100,idempotencyKey:"carol"});
+  workspace.contracts.grade(contract.id,"YES");
+  workspace.contracts.settle(contract.id);
+  const graded=workspace.contracts.get(contract.id);
+  const first=graded.awards[0];
+  const second=graded.awards[1];
+  workspace.contracts.transferAward(contract.id,second.id,"holder-b");
+  workspace.contracts.claim(contract.id,first.id);
+  assert.equal(workspace.contracts.get(contract.id).status,"settled");
+  const claimed=workspace.contracts.claim(contract.id,second.id);
+  assert.equal(claimed.claimed,true);
+  assert.equal(workspace.contracts.get(contract.id).status,"claimed");
+});
