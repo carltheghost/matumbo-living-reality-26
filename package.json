@@ -5,5 +5,12 @@
   "type": "module",
   "description": "Experimental programmable reality/world-model engine for maTumbo Living Reality Ω.",
   "scripts": {"test": "node --test tests/*.test.mjs"},
+  "exports": {
+    ".": "./src/core/index.js",
+    "./engine": "./src/core/reality-engine.js",
+    "./state": "./src/core/reality-state.js",
+    "./physics": "./src/core/physics-rules.js",
+    "./transforms": "./src/core/transformations.js"
+  },
   "engines": {"node": ">=20"}
 }
